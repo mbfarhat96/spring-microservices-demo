@@ -1,11 +1,10 @@
-package com.mohsin.product_service.controller;
+package com.farhat.product_service.controller;
 
 
-import com.mohsin.product_service.dto.ProductRequest;
-import com.mohsin.product_service.dto.ProductResponse;
-import com.mohsin.product_service.service.ProductService;
+import com.farhat.product_service.dto.ProductRequest;
+import com.farhat.product_service.dto.ProductResponse;
+import com.farhat.product_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

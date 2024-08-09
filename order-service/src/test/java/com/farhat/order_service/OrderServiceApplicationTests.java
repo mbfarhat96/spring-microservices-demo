@@ -3,7 +3,9 @@ package com.farhat.order_service;
 import com.farhat.order_service.dto.OrderLineItemsDto;
 import com.farhat.order_service.dto.OrderRequest;
 import com.farhat.order_service.repository.OrderRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OrderServiceApplicationTests {
 
 	@Container
-	static MySQLContainer mySQLContainer = new MySQLContainer("mysql:5.7.34");
+	static MySQLContainer mySQLContainer = new MySQLContainer("mysql:latest");
 	@Autowired
 	private  OrderRepository orderRepository;
 	@Autowired
@@ -45,6 +47,11 @@ class OrderServiceApplicationTests {
 	}
 
 	@Test
+	 void testConnection(){
+		System.out.println(mySQLContainer.getTestQueryString());
+	}
+
+	@Test
 	void shouldCreateOrder() throws Exception {
 		OrderRequest orderRequest = createOrderRequest();
 
@@ -53,7 +60,11 @@ class OrderServiceApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(orderRequestString))
-			.andExpect(status().isCreated());
+				.andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
+				.andExpect(status().isCreated());
+
+		System.out.println("Orders in repo are " + orderRepository.findAll());
+
 
 		Assertions.assertEquals(1,orderRepository.findAll().size());
 
@@ -71,8 +82,3 @@ class OrderServiceApplicationTests {
 	}
 
 }
-//So we'll be using MockMvc to perform the request itself (also side note, this is an integration test)
-//At the same time we'll be creating a test container for our mysql db/server. So we have to initialize that
-//We also have to configure it to run, so we should be using the class which I can't recall. But the test itself
-//Is fairly simple, we'll arrange the pieces (TestContainer,Repo,MockMvc, and then we'll send act/request)
-//Lastly we'll assert to see whether our db has one item at least.

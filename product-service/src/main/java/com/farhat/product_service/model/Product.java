@@ -1,4 +1,4 @@
-package com.mohsin.product_service.model;
+package com.farhat.product_service.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

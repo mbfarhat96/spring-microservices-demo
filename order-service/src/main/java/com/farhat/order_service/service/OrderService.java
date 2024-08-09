@@ -8,6 +8,7 @@ import com.farhat.order_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+
 
     public void placeOrder(OrderRequest orderRequest){
         Order order = new Order();
@@ -29,7 +31,8 @@ public class OrderService {
 
         order.setOrderLineItemsList(orderLineItems);
 
-        orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+        System.out.println("Saved id is" + saved.getId());
     }
 
     private OrderLineItems mapToEntity(OrderLineItemsDto orderLineItemsDto) {

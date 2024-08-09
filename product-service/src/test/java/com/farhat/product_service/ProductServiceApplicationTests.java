@@ -1,8 +1,8 @@
-package com.mohsin.product_service;
+package com.farhat.product_service;
 
-import com.mohsin.product_service.dto.ProductRequest;
-import com.mohsin.product_service.model.Product;
-import com.mohsin.product_service.repository.ProductRepository;
+import com.farhat.product_service.dto.ProductRequest;
+import com.farhat.product_service.model.Product;
+import com.farhat.product_service.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,9 +57,6 @@ class ProductServiceApplicationTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(productRequestString))
 			.andExpect(status().isCreated());
-
-		System.out.println(mongoDBContainer.getReplicaSetUrl());
-
 
 		Assertions.assertEquals(1, productRepository.findAll().size());
 	}

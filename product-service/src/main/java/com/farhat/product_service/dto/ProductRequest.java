@@ -1,4 +1,4 @@
-package com.mohsin.product_service.dto;
+package com.farhat.product_service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

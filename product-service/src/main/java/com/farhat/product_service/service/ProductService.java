@@ -1,9 +1,9 @@
-package com.mohsin.product_service.service;
+package com.farhat.product_service.service;
 
-import com.mohsin.product_service.dto.ProductResponse;
-import com.mohsin.product_service.model.Product;
-import com.mohsin.product_service.dto.ProductRequest;
-import com.mohsin.product_service.repository.ProductRepository;
+import com.farhat.product_service.dto.ProductRequest;
+import com.farhat.product_service.dto.ProductResponse;
+import com.farhat.product_service.model.Product;
+import com.farhat.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
