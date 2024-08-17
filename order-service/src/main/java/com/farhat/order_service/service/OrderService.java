@@ -24,7 +24,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
 
-    public void placeOrder(OrderRequest orderRequest){
+    public String placeOrder(OrderRequest orderRequest){
         Order order = new Order();
         List<OrderLineItems> orderLineItems = getOrderLineItems(orderRequest);  //Get order line items from the orderRequest
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -45,9 +45,12 @@ public class OrderService {
         if(allProductsInStock){
             orderRepository.save(order);
             log.info("Placed an order, order ID is {}",order.getId());
+            return "Order placed successfully";
         } else {
             throw new ProductOutOfStockException("Product is out of stock");
         }
+
+
     }
 
     private List<String> getSkuCodes(Order order) {
