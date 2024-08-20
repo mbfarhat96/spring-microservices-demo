@@ -7,6 +7,8 @@ import com.farhat.order_service.exception.ProductOutOfStockException;
 import com.farhat.order_service.model.Order;
 import com.farhat.order_service.model.OrderLineItems;
 import com.farhat.order_service.repository.OrderRepository;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
+    private final Tracer tracer;
 
     public String placeOrder(OrderRequest orderRequest){
         Order order = new Order();
@@ -31,24 +34,32 @@ public class OrderService {
         order.setOrderLineItemsList(orderLineItems);
         List<String> skuCodes = getSkuCodes(order); //Get skuCodes for the order-line items to check whether they're in stock
 
-        //Call Inventory service, and place order only if it's in stock.
-        InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
-                .uri("http://inventory-service/api/inventory",
-                        uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
-                        .retrieve()
-                                .bodyToMono(InventoryResponse[].class)
-                .block();
 
-        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
-                .allMatch(inventoryResponse -> inventoryResponse.isInStock());
+        Span inventoryServiceLookup = tracer.nextSpan().name("InventoryServiceLookup");
 
-        if(allProductsInStock){
-            orderRepository.save(order);
-            log.info("Placed an order, order ID is {}",order.getId());
-            return "Order placed successfully";
-        } else {
-            throw new ProductOutOfStockException("Product is out of stock");
+        try(Tracer.SpanInScope spanInScope = tracer.withSpan(inventoryServiceLookup.start())){
+            InventoryResponse[] inventoryResponseArray = webClientBuilder.build().get()
+                    .uri("http://inventory-service/api/inventory",
+                            uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
+                    .retrieve()
+                    .bodyToMono(InventoryResponse[].class)
+                    .block();
+
+            boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
+                    .allMatch(inventoryResponse -> inventoryResponse.isInStock());
+
+            if(allProductsInStock){
+                orderRepository.save(order);
+                log.info("Placed an order, order ID is {}",order.getId());
+                return "Order placed successfully";
+            } else {
+                throw new ProductOutOfStockException("Product is out of stock");
+            }
+        } finally {
+            inventoryServiceLookup.end();
         }
+        //Call Inventory service, and place order only if it's in stock.
+
 
 
     }

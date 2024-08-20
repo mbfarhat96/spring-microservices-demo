@@ -1,6 +1,7 @@
 package com.farhat.inventory_service;
 
 import org.springframework.boot.SpringApplication;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 public class TestInventoryServiceApplication {
 
